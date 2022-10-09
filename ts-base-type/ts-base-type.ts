@@ -30,6 +30,8 @@ const studentArr: {
   },
 ];
 
+const namesArr: Array<string> = ["Hutama", "Trirahmanto"];
+
 // Typescript Object
 const student: {
   nim: number;
@@ -48,6 +50,9 @@ const studentObj: {
   nim: 201383132,
   learn: ["React", "Typescript"],
 };
+
+// Typescript Enum
+const roles: [number, string] = [10, "Admin"];
 
 // Typescript inference
 let greetings = "Hello, my name Hutama";
