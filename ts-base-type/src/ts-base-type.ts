@@ -25,12 +25,13 @@ const studentArr: {
     age: 25,
   },
   {
-    name: "Budi",
+    name: "Audi",
     age: 30,
   },
 ];
 
 const namesArr: Array<string> = ["Hutama", "Trirahmanto"];
+const numArr: Array<number> = [10, 20];
 
 // Typescript Object
 const student: {
@@ -51,17 +52,35 @@ const studentObj: {
   learn: ["React", "Typescript"],
 };
 
-// Typescript Enum
+// Typescript Tuple
 const roles: [number, string] = [10, "Admin"];
+
+// Typescript Enum
+enum Days {
+  MON = "mon",
+  TUE = "tue",
+  WED = "wed",
+}
+
+type DaysName = `${Days}`;
+
+// Typescript Unknown
+let fullName: unknown;
+fullName = "Hutama";
+fullName = 10;
+
+// Typescript never
+const errFunc = (messageErr: string, codeErr: number): never => {
+  throw { message: messageErr, code: codeErr };
+};
 
 // Typescript inference
 let greetings = "Hello, my name Hutama";
-
+let newNum = 123;
 /* ! greetings = 123; */
 
 // Typescript Union
 let value: string | number = "React Typescript";
-
 value = 77;
 
 // Typescript Alias
@@ -85,8 +104,21 @@ const students: Student[] = [
 ];
 
 // Typescript Function Type Inference
-const sumNewValue = (a: number, b: number): number => a + b;
-
+const sumNewValue = (a: number, b: number) => a + b;
 const newValue = (value: number) => {
   console.log(value);
 };
+
+// Typescript Function void
+const someWord = (
+  word1: string,
+  word2: string,
+  callbackFn: (result: string) => void
+) => {
+  const result = `${word1} ${word2}`;
+  callbackFn(result);
+};
+
+someWord("Hutama", "Trirahmanto", (result) => {
+  console.log(result);
+});
