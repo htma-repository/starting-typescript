@@ -12,4 +12,4 @@ function animal(name: Horse, weight: Horse) {
   return name + weight;
 }
 
-console.log(animal("Brego", 300));
+console.log(animal("Bregas", 300));

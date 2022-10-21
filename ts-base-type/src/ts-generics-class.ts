@@ -8,7 +8,8 @@ class Country<T> {
   }
 
   removeCountry(name: T) {
-    return this.name.splice(this.name.indexOf(name), 1);
+    if (this.name.indexOf(name) === -1) return;
+    this.name.splice(this.name.indexOf(name), 1);
   }
 
   viewCountry() {
@@ -33,10 +34,12 @@ class People<T, U> {
   }
 }
 
-const newObject = new Country<object>([
-  new People<string, number>("Hutama", 27),
-  new People<string, number>("Trirahmanto", 28),
-]);
-newObject.addCountry(new People<string, number>("John", 30));
+const hutama = new People("Hutama", 27);
+
+const newObject = new Country<object>([hutama, new People("Trirahmanto", 28)]);
+newObject.addCountry(new People("John", 30));
+newObject.addCountry(new People("Dvina", 26));
+
+newObject.removeCountry(hutama);
 
 console.log(newObject.viewCountry());
