@@ -29,19 +29,27 @@ console.log(smartphone.getElectronic());
 // Function decorator with DOM
 function NewElement(target: string, element: string) {
   console.log("New Element Factory *2");
-  return function (constructor: any) {
-    console.log("New Element Decorator *1");
-    const newMain = <HTMLElement>document.getElementById(element);
-    const paragraph = <HTMLParagraphElement>document.createElement("p");
-    const newParagraph = <HTMLParagraphElement>document.createElement("p");
-    const paragraphContent = new constructor();
-    if (newMain && paragraph && newParagraph) {
-      newMain.innerHTML = target;
-      newMain.appendChild(paragraph);
-      newMain.appendChild(newParagraph);
-      paragraph.innerText = paragraphContent.name;
-      newParagraph.innerText = paragraphContent.age;
-    }
+  return function <
+    T extends { new (...args: any[]): { name: string; age: number } }
+  >(originalConstructor: T) {
+    return class extends originalConstructor {
+      constructor(...args: any[]) {
+        super(...args);
+        console.log("New Element Decorator *1");
+        const newMain = <HTMLElement>document.getElementById(element);
+        const paragraph = <HTMLParagraphElement>document.createElement("p");
+        const newParagraph = <HTMLParagraphElement>document.createElement("p");
+        if (newMain && paragraph && newParagraph) {
+          newMain.innerHTML = target;
+          newMain.appendChild(paragraph);
+          newMain.appendChild(newParagraph);
+          console.log("this", this);
+          console.log("arguments", args);
+          paragraph.innerText = this.name;
+          newParagraph.innerText = this.age.toString();
+        }
+      }
+    };
   };
 }
 
@@ -49,10 +57,17 @@ function NewElement(target: string, element: string) {
 @Gadget("New Gadget Decorator *2")
 @NewElement("<h1>Hutama Trirahmanto</h1>", "container")
 class Profile {
-  constructor(
-    protected name: string = "Hello World",
-    protected age: number = 30
-  ) {
+  name: string;
+  age: number;
+
+  set newProfile(profile: { name: string; age: number }) {
+    if (profile) {
+      this.name = profile.name;
+      this.age = profile.age;
+    }
+  }
+
+  constructor(name: string, age: number) {
     this.name = name;
     this.age = age;
   }
@@ -63,6 +78,9 @@ class Profile {
 }
 
 const newProfile = new Profile("Hutama", 27);
+const newProfile2 = new Profile("Trirahmanto", 28);
+newProfile.newProfile = { name: "John", age: 27 };
+console.log(newProfile.viewProfile());
 
 // Property, Accessor, Method & Parameter Decorator
 
@@ -117,7 +135,7 @@ class Product {
   // Method decorator
   @Item3
   // Parameter decorator
-  getTaxPrice(@Item4 tax: number) {
+  getTaxPrice(@Item4 tax: number = 0) {
     return this._price * (1 + tax);
   }
 }
@@ -127,3 +145,72 @@ const laptop = new Product("macbook", 20000000);
 laptop.price = 30000000;
 
 console.log(laptop);
+
+// AutoBind decorator
+const LogButton = <T, U>(_: T, _2: U, descriptor: PropertyDescriptor) => {
+  console.log("Method decorator Mouse");
+  console.log(descriptor);
+  const { value } = descriptor;
+  const adjDescriptor: PropertyDescriptor = {
+    configurable: true,
+    enumerable: false,
+    get() {
+      return value.bind(this);
+    },
+  };
+  console.log("adj", adjDescriptor);
+  return adjDescriptor;
+};
+
+class Mouse {
+  name = "my Mouse";
+
+  @LogButton
+  showMouse() {
+    console.log(this.name);
+  }
+}
+
+const { showMouse } = new Mouse();
+
+const button = <HTMLButtonElement>document.querySelector("#click-button")!;
+button.addEventListener("click", showMouse);
+
+// Validation with decorator
+
+const Required = () => {};
+
+const PositiveNumber = () => {};
+
+class Food {
+  name: string;
+  price: number;
+
+  constructor(name: string, price: number) {
+    this.name = name;
+    this.price = price;
+  }
+
+  showFood() {
+    return `${this.name} = Rp ${this.price}`;
+  }
+}
+
+const meatball = new Food("meatball", 20000);
+
+const foodForm = <HTMLFormElement>document.querySelector("form")!;
+const titleInput = <HTMLInputElement>document.getElementById("title")!;
+const priceInput = <HTMLInputElement>document.getElementById("price")!;
+
+foodForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const title = titleInput.value;
+  const price = +priceInput.value;
+
+  const newFood = new Food(title, price);
+
+  console.log(newFood.showFood());
+
+  titleInput.value = "";
+  priceInput.value = "";
+});
