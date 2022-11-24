@@ -3,9 +3,14 @@ const valueMerge = <T>(valueOne: T[], valueTwo: T) => {
   return [...valueOne, valueTwo];
 };
 
-const valueOfNumber = valueMerge([1, 2, 3], 4);
-const valueOfString = valueMerge(["one", "two", "three"], "four");
-const valueOfObject = valueMerge(
+const valueOfNumber = valueMerge<number>([1, 2, 3], 4);
+const valueOfString = valueMerge<string>(["one", "two", "three"], "four");
+
+type ObjType = {
+  firstName: string;
+  lastName: string;
+};
+const valueOfObject = valueMerge<ObjType>(
   [{ firstName: "Hutama", lastName: "Trirahmanto" }],
   { firstName: "John", lastName: "Doe" }
 );
@@ -15,7 +20,11 @@ console.log(valueOfString);
 console.log(valueOfObject);
 
 // * Custom generics with Constrains
-function merge<T extends object, U extends object>(valueOne: T, valueTwo: U) {
+interface Obj {
+  [key: string]: string | number;
+}
+
+function merge<T extends Obj, U extends Obj>(valueOne: T, valueTwo: U) {
   return Object.assign(valueOne, valueTwo);
 }
 
